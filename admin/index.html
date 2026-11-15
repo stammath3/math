@@ -5,8 +5,83 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex">
   <title>Διαχείριση υλικού</title>
+  <link rel="stylesheet" href="login.css">
 </head>
 <body>
-  <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
+  <main class="login" id="login" hidden>
+    <form class="card" id="form" autocomplete="on">
+      <div class="mark" aria-hidden="true">π</div>
+      <h1>Διαχείριση υλικού</h1>
+      <p class="sub">Συνδεθείτε για να ανεβάσετε ή να αλλάξετε υλικό.</p>
+      <label>Όνομα χρήστη
+        <input id="user" name="username" autocomplete="username" required autocapitalize="none" spellcheck="false">
+      </label>
+      <label>Κωδικός
+        <input id="pass" name="password" type="password" autocomplete="current-password" required>
+      </label>
+      <p class="error" id="error" role="alert" hidden></p>
+      <button type="submit" id="submit">Σύνδεση</button>
+      <a class="back" href="../">← Πίσω στο site</a>
+    </form>
+  </main>
+
+  <script src="auth.js"></script>
+  <script>
+  (function () {
+    "use strict";
+    // Ίδια έκδοση με αυτή που ελέγχθηκε. Μην την αλλάξετε χωρίς δοκιμή.
+    var CMS_SRC = "https://unpkg.com/@sveltia/cms@0.266.0/dist/sveltia-cms.js";
+    var KEY = "sveltia-cms.user";
+    var $ = function (id) { return document.getElementById(id); };
+
+    function hasSession() {
+      try {
+        var u = JSON.parse(localStorage.getItem(KEY) || "null");
+        return !!(u && u.backendName === "github" && u.token);
+      } catch (e) { return false; }
+    }
+    function startCms() {
+      var l = $("login"); if (l) l.remove();
+      document.body.classList.add("cms");
+      var s = document.createElement("script");
+      s.src = CMS_SRC;
+      document.body.appendChild(s);
+    }
+    function showError(msg) {
+      $("error").textContent = msg;
+      $("error").hidden = false;
+    }
+
+    if (hasSession()) { startCms(); return; }
+
+    $("login").hidden = false;
+    $("user").focus();
+
+    $("form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      $("error").hidden = true;
+      var btn = $("submit");
+      btn.disabled = true; btn.textContent = "Σύνδεση…";
+
+      fetch("login.json", { cache: "no-cache" })
+        .then(function (r) {
+          if (!r.ok) throw new Error("nosetup");
+          return r.json();
+        })
+        .then(function (box) { return MathAuth.decrypt(box, $("user").value, $("pass").value); })
+        .then(function (token) {
+          try { localStorage.setItem(KEY, JSON.stringify({ backendName: "github", token: token })); } catch (err) {}
+          if (!hasSession()) throw new Error("storage");
+          startCms();
+        })
+        .catch(function (err) {
+          btn.disabled = false; btn.textContent = "Σύνδεση";
+          if (err && err.message === "nosetup") showError("Η σύνδεση δεν έχει ρυθμιστεί ακόμα.");
+          else if (err && err.message === "storage") showError("Ο browser δεν επιτρέπει αποθήκευση. Δοκιμάστε εκτός ιδιωτικής περιήγησης.");
+          else { showError("Λάθος όνομα χρήστη ή κωδικός."); $("pass").select(); }
+        });
+    });
+  })();
+  </script>
 </body>
 </html>

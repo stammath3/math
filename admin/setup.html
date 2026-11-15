@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="el">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Ρύθμιση σύνδεσης</title>
+  <link rel="stylesheet" href="login.css">
+</head>
+<body>
+  <main class="login">
+    <form class="card" id="form" autocomplete="off">
+      <div class="mark" aria-hidden="true">π</div>
+      <h1>Ρύθμιση σύνδεσης</h1>
+      <p class="sub">Γίνεται μία φορά (και ξανά όταν λήξει το token ή αλλάξει ο κωδικός). Όλα γίνονται μέσα στον browser σας· το token δεν στέλνεται πουθενά αλλού εκτός από το GitHub.</p>
+
+      <label>GitHub token
+        <input id="token" type="password" placeholder="github_pat_…" required spellcheck="false">
+        <span class="hint">Χρειάζεται δικαίωμα «Contents: Read and write» στο repository.</span>
+      </label>
+      <label>Όνομα χρήστη για τη διαχείριση
+        <input id="user" required autocapitalize="none" spellcheck="false">
+      </label>
+      <label>Κωδικός
+        <input id="pass" type="password" required autocomplete="new-password">
+      </label>
+      <label>Κωδικός ξανά
+        <input id="pass2" type="password" required autocomplete="new-password">
+      </label>
+
+      <p class="error" id="error" role="alert" hidden></p>
+      <p class="ok" id="ok" hidden></p>
+      <button type="submit" id="submit">Αποθήκευση</button>
+      <a class="back" href="./">← Στη σελίδα σύνδεσης</a>
+    </form>
+  </main>
+
+  <script src="auth.js"></script>
+  <script>
+  (function () {
+    "use strict";
+    var REPO = "stammath3/math";
+    var BRANCH = "main";
+    var PATH = "admin/login.json";
+    var API = "https://api.github.com/repos/" + REPO;
+    var $ = function (id) { return document.getElementById(id); };
+
+    function gh(url, token, opts) {
+      opts = opts || {};
+      opts.headers = Object.assign({
+        "Authorization": "Bearer " + token,
+        "Accept": "application/vnd.github+json"
+      }, opts.headers || {});
+      return fetch(url, opts);
+    }
+    function fail(msg) {
+      $("error").textContent = msg; $("error").hidden = false;
+      $("submit").disabled = false; $("submit").textContent = "Αποθήκευση";
+    }
+
+    $("form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      $("error").hidden = true; $("ok").hidden = true;
+      var token = $("token").value.trim(), user = $("user").value.trim(), pass = $("pass").value;
+      if (pass !== $("pass2").value) return fail("Οι δύο κωδικοί δεν είναι ίδιοι.");
+      if (pass.length < 8) return fail("Ο κωδικός πρέπει να έχει τουλάχιστον 8 χαρακτήρες.");
+      $("submit").disabled = true; $("submit").textContent = "Έλεγχος…";
+
+      gh(API, token)
+        .then(function (r) {
+          if (r.status === 401) throw new Error("Το token δεν είναι σωστό ή έχει λήξει.");
+          if (r.status === 404) throw new Error("Το token δεν έχει πρόσβαση στο repository " + REPO + ".");
+          if (!r.ok) throw new Error("Σφάλμα GitHub (" + r.status + ").");
+          return r.json();
+        })
+        .then(function (repo) {
+          if (repo.permissions && repo.permissions.push === false)
+            throw new Error("Το token δεν έχει δικαίωμα εγγραφής (Contents: Read and write).");
+          $("submit").textContent = "Κρυπτογράφηση…";
+          return MathAuth.encrypt(token, user, pass);
+        })
+        .then(function (box) {
+          $("submit").textContent = "Αποθήκευση…";
+          return gh(API + "/contents/" + PATH + "?ref=" + BRANCH, token)
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (existing) {
+              var body = {
+                message: "Ρύθμιση σύνδεσης διαχείρισης",
+                content: btoa(JSON.stringify(box, null, 2) + "\n"),
+                branch: BRANCH
+              };
+              if (existing && existing.sha) body.sha = existing.sha;
+              return gh(API + "/contents/" + PATH, token, { method: "PUT", body: JSON.stringify(body) });
+            });
+        })
+        .then(function (r) {
+          if (!r.ok) throw new Error("Δεν αποθηκεύτηκε (" + r.status + "). Ελέγξτε ότι το token έχει «Contents: Read and write».");
+          $("form").reset();
+          $("submit").disabled = false; $("submit").textContent = "Αποθήκευση";
+          $("ok").textContent = "Έτοιμο! Σε 1–2 λεπτά η σύνδεση με όνομα χρήστη και κωδικό θα δουλεύει.";
+          $("ok").hidden = false;
+        })
+        .catch(function (err) {
+          fail(err && err.message && !/fetch/i.test(err.message) ? err.message : "Δεν ήταν δυνατή η σύνδεση με το GitHub. Ελέγξτε το internet.");
+        });
+    });
+  })();
+  </script>
+</body>
+</html>
