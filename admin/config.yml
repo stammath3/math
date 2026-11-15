@@ -11,7 +11,7 @@ backend:
     update: "Ενημέρωση υλικού"
     uploadMedia: "Νέο αρχείο: {{path}}"
 
-media_folder: math-site/uploads
+media_folder: uploads
 public_folder: uploads
 
 collections:
@@ -20,7 +20,7 @@ collections:
     files:
       - name: materials
         label: "Όλες οι αναρτήσεις"
-        file: math-site/content/materials.json
+        file: content/materials.json
         format: json
         fields:
           - name: items
@@ -54,7 +54,7 @@ collections:
     files:
       - name: site
         label: "Στοιχεία αρχικής σελίδας"
-        file: math-site/content/site.json
+        file: content/site.json
         format: json
         fields:
           - { name: title, label: "Όνομα site", widget: string, hint: "π.χ. Μαθηματικά με την κα Μαρία" }
