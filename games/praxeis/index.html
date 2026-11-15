@@ -75,7 +75,7 @@
 </head>
 <body>
 <div class="wrap">
-  <div class="top"><a href="../../">← Πίσω στο υλικό</a></div>
+  <div class="top"><a href="../../">← Πίσω στο site</a></div>
 
   <section class="panel" id="menu">
     <h1>Αγώνας Πράξεων</h1>
@@ -110,35 +110,23 @@
 
   function rnd(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
   function pick(arr) { return arr[rnd(0, arr.length - 1)]; }
-  function p(n) { return n < 0 ? "(" + fmt(n) + ")" : fmt(n); } // αρνητικοί σε παρένθεση
   function fmt(n) { return n < 0 ? "−" + Math.abs(n) : String(n); }
 
+  function add(max) { return function () {
+    var a = rnd(1, max - 1), b = rnd(1, max - a);
+    return { q: a + " + " + b, a: a + b };
+  }; }
+  function sub(max) { return function () {
+    var a = rnd(2, max), b = rnd(1, a - 1);
+    return { q: a + " − " + b, a: a - b };
+  }; }
   var LEVELS = [
-    { id: "add", name: "Πρόσθεση & Αφαίρεση", desc: "Αριθμοί έως το 100", gen: function () {
-        var a = rnd(5, 60), b = rnd(2, 40);
-        if (Math.random() < .5) return { q: a + " + " + b, a: a + b };
-        if (b > a) { var t = a; a = b; b = t; }
-        return { q: a + " − " + b, a: a - b };
-    }},
-    { id: "mul", name: "Προπαίδεια & Διαίρεση", desc: "Πολλαπλασιασμός και διαίρεση ως το 12×12", gen: function () {
-        var a = rnd(2, 12), b = rnd(2, 12);
-        if (Math.random() < .6) return { q: a + " × " + b, a: a * b };
-        return { q: (a * b) + " : " + a, a: b };
-    }},
-    { id: "int", name: "Θετικοί & Αρνητικοί", desc: "Πράξεις με ακέραιους", gen: function () {
-        var a = rnd(-15, 15), b = rnd(-15, 15);
-        if (b === 0) b = -7;
-        var op = pick(["+", "−", "×"]);
-        if (op === "×") { a = rnd(-9, 9); b = rnd(-9, 9) || 4; return { q: p(a) + " · " + p(b), a: a * b }; }
-        if (op === "+") return { q: fmt(a) + " + " + p(b), a: a + b };
-        return { q: fmt(a) + " − " + p(b), a: a - b };
-    }},
-    { id: "eq", name: "Εξισώσεις", desc: "Βρες το x: αx + β = γ", gen: function () {
-        var x = rnd(-9, 9), a = rnd(2, 9), b = rnd(-20, 20);
-        if (b === 0) b = 5;
-        var c = a * x + b;
-        var left = a + "x " + (b < 0 ? "− " + Math.abs(b) : "+ " + b);
-        return { q: left + " = " + fmt(c), a: x, ask: "Πόσο είναι το x;" };
+    { id: "add20",  name: "Πρόσθεση ως το 20",  desc: "π.χ. 8 + 7", gen: add(20) },
+    { id: "sub20",  name: "Αφαίρεση ως το 20",  desc: "π.χ. 15 − 6", gen: sub(20) },
+    { id: "add100", name: "Πρόσθεση ως το 100", desc: "π.χ. 47 + 38", gen: add(100) },
+    { id: "sub100", name: "Αφαίρεση ως το 100", desc: "π.χ. 52 − 27", gen: sub(100) },
+    { id: "mix100", name: "Ανάμεικτα ως το 100", desc: "Πρόσθεση και αφαίρεση μαζί", gen: function () {
+        return Math.random() < .5 ? add(100)() : sub(100)();
     }}
   ];
 
@@ -161,7 +149,7 @@
 
   function options(ans) {
     var set = [ans];
-    var cands = [ans + 1, ans - 1, ans + 2, ans - 2, -ans, ans + 10, ans - 10, ans + rnd(3, 6), ans - rnd(3, 6)];
+    var cands = [ans + 1, ans - 1, ans + 2, ans - 2, ans + 10, ans - 10, ans + rnd(3, 6), ans - rnd(3, 6), ans + 11, ans + 9].filter(function (v) { return v >= 0; });
     cands.sort(function () { return Math.random() - .5; });
     for (var i = 0; i < cands.length && set.length < 4; i++) if (set.indexOf(cands[i]) < 0) set.push(cands[i]);
     return set.sort(function () { return Math.random() - .5; });
