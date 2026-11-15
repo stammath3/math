@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Αγώνας Πράξεων</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f6fb; --surface: #fff; --surface-2: #eef1f8; --text: #1a1f36; --muted: #5b6380;
+    --border: #dfe3ee; --accent: #2f5bd3; --accent-ink: #fff;
+    --good: #1f8a3b; --good-bg: #e2f5e7; --bad: #c4283f; --bad-bg: #fde6ea; --warn: #b5470b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #11141f; --surface: #1a1e2c; --surface-2: #252a3b; --text: #e8eaf2; --muted: #a0a7c0;
+      --border: #30364a; --accent: #7d9cff; --accent-ink: #0d1430;
+      --good: #7fe09a; --good-bg: #1c3a25; --bad: #ff98a9; --bad-bg: #4a1f2a; --warn: #ffb380;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #11141f; --surface: #1a1e2c; --surface-2: #252a3b; --text: #e8eaf2; --muted: #a0a7c0;
+    --border: #30364a; --accent: #7d9cff; --accent-ink: #0d1430;
+    --good: #7fe09a; --good-bg: #1c3a25; --bad: #ff98a9; --bad-bg: #4a1f2a; --warn: #ffb380;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Inter", system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  .wrap { max-width: 560px; margin: 0 auto; padding: 16px; }
+  .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .top a { color: var(--muted); text-decoration: none; font-size: 14px; }
+  .top a:hover { color: var(--accent); }
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 24px 20px; box-shadow: 0 4px 20px rgba(20,30,70,.07); }
+  h1 { margin: 0 0 6px; font-size: 28px; font-weight: 800; letter-spacing: -.01em; }
+  .sub { margin: 0 0 20px; color: var(--muted); }
+  .levels { display: grid; gap: 10px; }
+  .level {
+    display: flex; justify-content: space-between; align-items: center; gap: 12px; text-align: left;
+    font: inherit; cursor: pointer; padding: 14px 16px; border-radius: 12px;
+    border: 1px solid var(--border); background: var(--surface-2); color: var(--text);
+  }
+  .level:hover { border-color: var(--accent); }
+  .level strong { display: block; font-size: 16px; }
+  .level small { color: var(--muted); }
+  .best { font-size: 13px; color: var(--muted); white-space: nowrap; }
+  .hud { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-weight: 700; margin-bottom: 10px; }
+  .hud .streak { color: var(--warn); font-size: 14px; min-height: 1em; }
+  .bar { height: 8px; background: var(--surface-2); border-radius: 99px; overflow: hidden; margin-bottom: 22px; }
+  .bar > div { height: 100%; background: var(--accent); width: 100%; transition: width .25s linear; }
+  .bar.low > div { background: var(--bad); }
+  .question { text-align: center; font-size: clamp(30px, 9vw, 46px); font-weight: 800; padding: 14px 0 26px; font-variant-numeric: tabular-nums; }
+  .question .ask { display: block; font-size: 15px; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+  .answers { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .ans {
+    font: inherit; font-size: 24px; font-weight: 700; cursor: pointer; padding: 16px 8px; border-radius: 12px;
+    border: 2px solid var(--border); background: var(--surface); color: var(--text); position: relative;
+    font-variant-numeric: tabular-nums;
+  }
+  .ans:hover { border-color: var(--accent); }
+  .ans kbd { position: absolute; top: 6px; left: 9px; font: 600 11px Inter, sans-serif; color: var(--muted); }
+  .ans.good { border-color: var(--good); background: var(--good-bg); color: var(--good); }
+  .ans.bad { border-color: var(--bad); background: var(--bad-bg); color: var(--bad); }
+  .ans:disabled { cursor: default; }
+  .btn { font: inherit; font-weight: 700; cursor: pointer; border: none; padding: 12px 20px; border-radius: 10px; background: var(--accent); color: var(--accent-ink); }
+  .btn.ghost { background: var(--surface-2); color: var(--text); }
+  .result { text-align: center; }
+  .big { font-size: 64px; font-weight: 800; line-height: 1; margin: 10px 0; color: var(--accent); }
+  .stats { color: var(--muted); margin-bottom: 8px; }
+  .msg { font-weight: 600; margin: 14px 0 22px; }
+  .row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .hint { color: var(--muted); font-size: 13px; text-align: center; margin-top: 16px; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><a href="../../">← Πίσω στο υλικό</a></div>
+
+  <section class="panel" id="menu">
+    <h1>Αγώνας Πράξεων</h1>
+    <p class="sub">Έχεις 60 δευτερόλεπτα. Κάθε σωστή απάντηση δίνει πόντους. Αν απαντάς σωστά στη σειρά, οι πόντοι αυξάνονται!</p>
+    <div class="levels" id="levels"></div>
+  </section>
+
+  <section class="panel" id="play" hidden>
+    <div class="hud"><span id="score">0 πόντοι</span><span class="streak" id="streak"></span><span id="time">60″</span></div>
+    <div class="bar" id="bar"><div id="bar-fill"></div></div>
+    <div class="question" id="question"></div>
+    <div class="answers" id="answers"></div>
+    <p class="hint">Μπορείς να πατάς και τα πλήκτρα 1–4.</p>
+  </section>
+
+  <section class="panel result" id="end" hidden>
+    <h1>Τέλος χρόνου!</h1>
+    <div class="big" id="final"></div>
+    <div class="stats" id="stats"></div>
+    <div class="msg" id="msg"></div>
+    <div class="row">
+      <button class="btn" id="again">Ξανά</button>
+      <button class="btn ghost" id="to-menu">Άλλο επίπεδο</button>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var DURATION = 60;
+
+  function rnd(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
+  function pick(arr) { return arr[rnd(0, arr.length - 1)]; }
+  function p(n) { return n < 0 ? "(" + fmt(n) + ")" : fmt(n); } // αρνητικοί σε παρένθεση
+  function fmt(n) { return n < 0 ? "−" + Math.abs(n) : String(n); }
+
+  var LEVELS = [
+    { id: "add", name: "Πρόσθεση & Αφαίρεση", desc: "Αριθμοί έως το 100", gen: function () {
+        var a = rnd(5, 60), b = rnd(2, 40);
+        if (Math.random() < .5) return { q: a + " + " + b, a: a + b };
+        if (b > a) { var t = a; a = b; b = t; }
+        return { q: a + " − " + b, a: a - b };
+    }},
+    { id: "mul", name: "Προπαίδεια & Διαίρεση", desc: "Πολλαπλασιασμός και διαίρεση ως το 12×12", gen: function () {
+        var a = rnd(2, 12), b = rnd(2, 12);
+        if (Math.random() < .6) return { q: a + " × " + b, a: a * b };
+        return { q: (a * b) + " : " + a, a: b };
+    }},
+    { id: "int", name: "Θετικοί & Αρνητικοί", desc: "Πράξεις με ακέραιους", gen: function () {
+        var a = rnd(-15, 15), b = rnd(-15, 15);
+        if (b === 0) b = -7;
+        var op = pick(["+", "−", "×"]);
+        if (op === "×") { a = rnd(-9, 9); b = rnd(-9, 9) || 4; return { q: p(a) + " · " + p(b), a: a * b }; }
+        if (op === "+") return { q: fmt(a) + " + " + p(b), a: a + b };
+        return { q: fmt(a) + " − " + p(b), a: a - b };
+    }},
+    { id: "eq", name: "Εξισώσεις", desc: "Βρες το x: αx + β = γ", gen: function () {
+        var x = rnd(-9, 9), a = rnd(2, 9), b = rnd(-20, 20);
+        if (b === 0) b = 5;
+        var c = a * x + b;
+        var left = a + "x " + (b < 0 ? "− " + Math.abs(b) : "+ " + b);
+        return { q: left + " = " + fmt(c), a: x, ask: "Πόσο είναι το x;" };
+    }}
+  ];
+
+  var $ = function (id) { return document.getElementById(id); };
+  var level, score, streak, correct, total, timeLeft, timer, current, locked;
+
+  function bestKey(id) { return "praxeis-best-" + id; }
+  function getBest(id) { try { return Number(localStorage.getItem(bestKey(id))) || 0; } catch (e) { return 0; } }
+  function setBest(id, v) { try { localStorage.setItem(bestKey(id), String(v)); } catch (e) {} }
+
+  function showMenu() {
+    $("levels").innerHTML = LEVELS.map(function (l, i) {
+      var b = getBest(l.id);
+      return '<button class="level" data-i="' + i + '"><span><strong>' + l.name + "</strong><small>" + l.desc + "</small></span>" +
+        '<span class="best">' + (b ? "Ρεκόρ: " + b : "") + "</span></button>";
+    }).join("");
+    show("menu");
+  }
+  function show(id) { ["menu", "play", "end"].forEach(function (s) { $(s).hidden = s !== id; }); }
+
+  function options(ans) {
+    var set = [ans];
+    var cands = [ans + 1, ans - 1, ans + 2, ans - 2, -ans, ans + 10, ans - 10, ans + rnd(3, 6), ans - rnd(3, 6)];
+    cands.sort(function () { return Math.random() - .5; });
+    for (var i = 0; i < cands.length && set.length < 4; i++) if (set.indexOf(cands[i]) < 0) set.push(cands[i]);
+    return set.sort(function () { return Math.random() - .5; });
+  }
+
+  function next() {
+    current = level.gen();
+    locked = false;
+    $("question").innerHTML = (current.ask ? '<span class="ask">' + current.ask + "</span>" : "") + current.q + (current.ask ? "" : " = ;");
+    $("answers").innerHTML = options(current.a).map(function (v, i) {
+      return '<button class="ans" data-v="' + v + '"><kbd>' + (i + 1) + "</kbd>" + fmt(v) + "</button>";
+    }).join("");
+  }
+
+  function answer(btn) {
+    if (locked || !btn) return;
+    locked = true;
+    total++;
+    var v = Number(btn.dataset.v);
+    var buttons = $("answers").querySelectorAll(".ans");
+    buttons.forEach(function (b) { b.disabled = true; if (Number(b.dataset.v) === current.a) b.classList.add("good"); });
+    if (v === current.a) {
+      correct++; streak++;
+      score += 10 + Math.min(streak - 1, 5) * 2;
+    } else {
+      streak = 0;
+      btn.classList.add("bad");
+    }
+    $("score").textContent = score + " πόντοι";
+    $("streak").textContent = streak >= 3 ? "🔥 " + streak + " στη σειρά" : "";
+    setTimeout(function () { if (timeLeft > 0) next(); }, v === current.a ? 350 : 1100);
+  }
+
+  function start(i) {
+    level = LEVELS[i];
+    score = 0; streak = 0; correct = 0; total = 0; timeLeft = DURATION;
+    $("score").textContent = "0 πόντοι"; $("streak").textContent = "";
+    tick();
+    show("play");
+    next();
+    clearInterval(timer);
+    timer = setInterval(function () { timeLeft--; tick(); if (timeLeft <= 0) finish(); }, 1000);
+  }
+  function tick() {
+    $("time").textContent = timeLeft + "″";
+    $("bar-fill").style.width = (timeLeft / DURATION * 100) + "%";
+    $("bar").classList.toggle("low", timeLeft <= 10);
+  }
+  function finish() {
+    clearInterval(timer);
+    var prev = getBest(level.id);
+    var record = score > prev;
+    if (record) setBest(level.id, score);
+    $("final").textContent = score;
+    $("stats").textContent = "Σωστές: " + correct + " από " + total + " · " + level.name;
+    $("msg").textContent = record && prev ? "🏆 Νέο ρεκόρ! (το προηγούμενο ήταν " + prev + ")"
+      : record ? "🎉 Μπράβο! Αυτό είναι το πρώτο σου ρεκόρ."
+      : "Το ρεκόρ σου είναι " + prev + ". Μπορείς να το σπάσεις!";
+    show("end");
+  }
+
+  document.addEventListener("click", function (e) {
+    var l = e.target.closest(".level"); if (l) return start(Number(l.dataset.i));
+    var a = e.target.closest(".ans"); if (a) return answer(a);
+  });
+  document.addEventListener("keydown", function (e) {
+    if ($("play").hidden) return;
+    var n = Number(e.key);
+    if (n >= 1 && n <= 4) answer($("answers").querySelectorAll(".ans")[n - 1]);
+  });
+  $("again").addEventListener("click", function () { start(LEVELS.indexOf(level)); });
+  $("to-menu").addEventListener("click", showMenu);
+
+  showMenu();
+})();
+</script>
+</body>
+</html>

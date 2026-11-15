@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="el">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Μαθηματικά</title>
+  <meta name="description" content="Σημειώσεις, ασκήσεις, φωτοτυπίες, βίντεο και παιχνίδια μαθηματικών για τους μαθητές.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Literata:opsz,wght@7..72,600;7..72,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232f5bd3'/%3E%3Ctext x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='serif'%3E%CF%80%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="./">
+        <span class="brand-mark" aria-hidden="true">π</span>
+        <span class="brand-text" id="site-title">Μαθηματικά</span>
+      </a>
+      <span class="header-sub" id="site-school"></span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <h1 id="hero-title">Καλώς ήρθατε!</h1>
+      <p id="hero-intro">Εδώ θα βρείτε σημειώσεις, ασκήσεις, φωτοτυπίες και παιχνίδια για το μάθημα.</p>
+      <p class="hero-teacher" id="hero-teacher"></p>
+    </section>
+
+    <section class="filters" aria-label="Φίλτρα">
+      <div class="search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="Αναζήτηση (π.χ. εξισώσεις, κλάσματα…)" autocomplete="off">
+      </div>
+      <div class="chip-group">
+        <span class="chip-label">Τάξη</span>
+        <div class="chips" id="grade-chips" role="group" aria-label="Τάξη"></div>
+      </div>
+      <div class="chip-group">
+        <span class="chip-label">Είδος</span>
+        <div class="chips" id="type-chips" role="group" aria-label="Είδος υλικού"></div>
+      </div>
+    </section>
+
+    <p class="result-count" id="count" aria-live="polite"></p>
+    <section class="grid" id="grid"></section>
+    <p class="empty" id="empty" hidden>Δεν βρέθηκε υλικό με αυτά τα φίλτρα.</p>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap"><span id="footer-text">Μαθηματικά</span></div>
+  </footer>
+
+  <dialog id="video-dialog" aria-label="Βίντεο">
+    <div class="dialog-head">
+      <strong id="video-title"></strong>
+      <button class="icon-btn" id="video-close" aria-label="Κλείσιμο">✕</button>
+    </div>
+    <div class="video-frame"><iframe id="video-iframe" title="Βίντεο" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+  </dialog>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>

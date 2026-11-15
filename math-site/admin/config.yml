@@ -1,0 +1,64 @@
+# ─────────────────────────────────────────────────────────────
+#  Ρυθμίσεις της σελίδας διαχείρισης (/admin)
+#  ΑΛΛΑΞΕ ΜΟΝΟ τη γραμμή "repo" με το δικό σου GitHub:
+#  π.χ.  repo: giorgos123/mathimatika
+# ─────────────────────────────────────────────────────────────
+backend:
+  name: github
+  repo: stammath3/math
+  branch: main
+  commit_messages:
+    update: "Ενημέρωση υλικού"
+    uploadMedia: "Νέο αρχείο: {{path}}"
+
+media_folder: uploads
+public_folder: uploads
+
+collections:
+  - name: material
+    label: "Υλικό μαθήματος"
+    files:
+      - name: materials
+        label: "Όλες οι αναρτήσεις"
+        file: content/materials.json
+        format: json
+        fields:
+          - name: items
+            label: "Αναρτήσεις"
+            label_singular: "ανάρτηση"
+            widget: list
+            add_to_top: true
+            collapsed: true
+            summary: "{{fields.date}} · {{fields.title}}"
+            fields:
+              - { name: title, label: "Τίτλος", widget: string }
+              - name: type
+                label: "Είδος"
+                widget: select
+                default: "Ασκήσεις"
+                options: ["Σημειώσεις", "Ασκήσεις", "Φωτοτυπίες", "Διαγωνίσματα", "Βίντεο", "Παιχνίδια"]
+              - name: grade
+                label: "Τάξη (μπορείς να διαλέξεις πολλές)"
+                widget: select
+                multiple: true
+                options: ["Όλες οι τάξεις", "Α' Γυμνασίου", "Β' Γυμνασίου", "Γ' Γυμνασίου", "Α' Λυκείου", "Β' Λυκείου", "Γ' Λυκείου"]
+              - { name: chapter, label: "Κεφάλαιο / Ενότητα", widget: string, required: false, hint: "π.χ. Κεφ. 2: Κλάσματα" }
+              - { name: date, label: "Ημερομηνία", widget: datetime, time_format: false, format: "YYYY-MM-DD", date_format: "DD/MM/YYYY" }
+              - { name: description, label: "Περιγραφή (προαιρετική)", widget: text, required: false }
+              - { name: file, label: "Αρχείο (PDF, Word, εικόνα…)", widget: file, required: false, hint: "Ανέβασε εδώ το αρχείο. Για βίντεο προτίμησε YouTube και βάλε τον σύνδεσμο από κάτω." }
+              - { name: link, label: "Σύνδεσμος (YouTube, παιχνίδι, άλλη σελίδα)", widget: string, required: false, hint: "Προαιρετικό. Αν βάλεις σύνδεσμο YouTube, το βίντεο παίζει μέσα στο site." }
+              - { name: hidden, label: "Κρυφό (να μη φαίνεται ακόμα στους μαθητές)", widget: boolean, default: false, required: false }
+
+  - name: settings
+    label: "Ρυθμίσεις site"
+    files:
+      - name: site
+        label: "Στοιχεία αρχικής σελίδας"
+        file: content/site.json
+        format: json
+        fields:
+          - { name: title, label: "Όνομα site", widget: string, hint: "π.χ. Μαθηματικά με την κα Μαρία" }
+          - { name: school, label: "Σχολείο", widget: string, required: false }
+          - { name: teacher, label: "Καθηγήτρια", widget: string, required: false, hint: "π.χ. Μαρία Παπαδοπούλου, Μαθηματικός" }
+          - { name: welcome, label: "Μεγάλος τίτλος αρχικής", widget: string }
+          - { name: intro, label: "Κείμενο καλωσορίσματος", widget: text }
