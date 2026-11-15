@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Μαθηματικά</title>
-  <meta name="description" content="Σημειώσεις, ασκήσεις, φωτοτυπίες, βίντεο και παιχνίδια μαθηματικών για τους μαθητές.">
+  <meta name="description" content="Σημειώσεις, βίντεο και παιχνίδια μαθηματικών.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Literata:opsz,wght@7..72,600;7..72,700&display=swap" rel="stylesheet">
@@ -16,42 +16,32 @@
     <div class="wrap header-inner">
       <a class="brand" href="./">
         <span class="brand-mark" aria-hidden="true">π</span>
-        <span class="brand-text" id="site-title">Μαθηματικά</span>
+        <span>Μαθηματικά</span>
       </a>
-      <span class="header-sub" id="site-school"></span>
+      <nav class="nav" aria-label="Ενότητες">
+        <a href="#simeioseis">Σημειώσεις</a>
+        <a href="#vinteo">Βίντεο</a>
+        <a href="#paixnidia">Παιχνίδια</a>
+      </nav>
     </div>
   </header>
 
   <main class="wrap">
-    <section class="hero">
-      <h1 id="hero-title">Καλώς ήρθατε!</h1>
-      <p id="hero-intro">Εδώ θα βρείτε σημειώσεις, ασκήσεις, φωτοτυπίες και παιχνίδια για το μάθημα.</p>
-      <p class="hero-teacher" id="hero-teacher"></p>
+    <section class="section" id="simeioseis">
+      <h2><span class="dot t-notes"></span>Σημειώσεις</h2>
+      <ul class="list" id="notes"></ul>
     </section>
 
-    <section class="filters" aria-label="Φίλτρα">
-      <div class="search">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        <input id="q" type="search" placeholder="Αναζήτηση (π.χ. εξισώσεις, κλάσματα…)" autocomplete="off">
-      </div>
-      <div class="chip-group">
-        <span class="chip-label">Τάξη</span>
-        <div class="chips" id="grade-chips" role="group" aria-label="Τάξη"></div>
-      </div>
-      <div class="chip-group">
-        <span class="chip-label">Είδος</span>
-        <div class="chips" id="type-chips" role="group" aria-label="Είδος υλικού"></div>
-      </div>
+    <section class="section" id="vinteo">
+      <h2><span class="dot t-video"></span>Βίντεο</h2>
+      <ul class="list" id="videos"></ul>
     </section>
 
-    <p class="result-count" id="count" aria-live="polite"></p>
-    <section class="grid" id="grid"></section>
-    <p class="empty" id="empty" hidden>Δεν βρέθηκε υλικό με αυτά τα φίλτρα.</p>
+    <section class="section" id="paixnidia">
+      <h2><span class="dot t-game"></span>Παιχνίδια</h2>
+      <ul class="list" id="games"></ul>
+    </section>
   </main>
-
-  <footer class="site-footer">
-    <div class="wrap"><span id="footer-text">Μαθηματικά</span></div>
-  </footer>
 
   <dialog id="video-dialog" aria-label="Βίντεο">
     <div class="dialog-head">
