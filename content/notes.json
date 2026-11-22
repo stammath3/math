@@ -1,6 +1,14 @@
 {
   "items": [
-    { "title": "Ασκήσεις: Πρόσθεση και Αφαίρεση", "date": "2026-11-15", "file": "uploads/askiseis-prosthesi-afairesi.pdf" },
-    { "title": "Σημειώσεις: Πρόσθεση και Αφαίρεση", "date": "2026-11-14", "file": "uploads/prosthesi-afairesi.pdf" }
+    {
+      "title": "δαίρεση",
+      "date": "2026-11-23",
+      "file": "/uploads/23-11,ευκλέιδια διαίρεση.docx"
+    },
+    {
+      "title": "πολλαπλασιασμός",
+      "date": "2026-11-19",
+      "file": "/uploads/17-11 , πολλαπλασιασμός.docx"
+    }
   ]
 }
