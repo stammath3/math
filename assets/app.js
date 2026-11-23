@@ -10,7 +10,11 @@
   }
   function safeUrl(u) {
     u = String(u || "").trim();
-    return /^(javascript|data|vbscript):/i.test(u) ? "" : u;
+    if (/^(javascript|data|vbscript):/i.test(u)) return "";
+    // Η διαχείριση γράφει «/uploads/…», αλλά το site ζει στο /math/,
+    // οπότε κάνουμε τα τοπικά αρχεία σχετικά: «/uploads/x» → «uploads/x».
+    if (/^\/(?!\/)/.test(u)) u = u.replace(/^\/(math\/)?/, "");
+    return u;
   }
   function fmtDate(d) {
     var m = String(d || "").match(/^(\d{4})-(\d{2})-(\d{2})/);
